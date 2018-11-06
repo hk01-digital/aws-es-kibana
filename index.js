@@ -73,6 +73,8 @@ var argv = yargs.argv;
 
 var ENDPOINT = process.env.ENDPOINT || argv._[0];
 
+var DEBUG = process.env.DEBUG || false
+
 if (!ENDPOINT) {
     yargs.showHelp();
     process.exit(1);
@@ -164,6 +166,8 @@ app.use(async function (req, res) {
         await bufferStream.end(req.body);
     }
     proxy.web(req, res, {buffer: bufferStream});
+
+    DEBUG && console.log(JSON.stringify(req))
 });
 
 proxy.on('proxyReq', function (proxyReq, req) {
