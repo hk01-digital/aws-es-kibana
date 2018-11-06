@@ -168,7 +168,7 @@ app.use(async function (req, res) {
     proxy.web(req, res, {buffer: bufferStream});
 
     DEBUG && console.log(JSON.stringify({
-        body: req.body,
+        body: req.body.toString('utf8'),
         path: req.path,
         method: req.method,
     }))
