@@ -167,7 +167,11 @@ app.use(async function (req, res) {
     }
     proxy.web(req, res, {buffer: bufferStream});
 
-    DEBUG && console.log(JSON.stringify(req))
+    DEBUG && console.log(JSON.stringify({
+        body: req.body,
+        path: req.path,
+        method: req.method,
+    }))
 });
 
 proxy.on('proxyReq', function (proxyReq, req) {
