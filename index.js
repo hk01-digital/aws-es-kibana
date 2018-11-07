@@ -203,8 +203,8 @@ proxy.on('proxyRes', function (proxyRes, req, res) {
             status: proxyRes.statusCode,
             headers: proxyRes.headers
         }
-    })
-);
+    }))
+});
 
 http.createServer(app).listen(PORT, BIND_ADDRESS);
 
