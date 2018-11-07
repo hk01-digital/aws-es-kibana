@@ -166,12 +166,6 @@ app.use(async function (req, res) {
         await bufferStream.end(req.body);
     }
     proxy.web(req, res, {buffer: bufferStream});
-
-    DEBUG && console.log(JSON.stringify({
-        body: req.body.toString('utf8'),
-        path: req.path,
-        method: req.method,
-    }))
 });
 
 proxy.on('proxyReq', function (proxyReq, req) {
@@ -194,10 +188,21 @@ proxy.on('proxyReq', function (proxyReq, req) {
     if (request.headers['x-amz-security-token']) proxyReq.setHeader('x-amz-security-token', request.headers['x-amz-security-token']);
 });
 
-proxy.on('proxyRes', function (proxyReq, req, res) {
+proxy.on('proxyRes', function (proxyRes, req, res) {
     if (req.url.match(/\.(css|js|img|font)/)) {
         res.setHeader('Cache-Control', 'public, max-age=86400');
     }
+
+    DEBUG && console.log("request", JSON.stringify({
+        body: req.body.toString('utf8'),
+        path: req.path,
+        method: req.method,
+        headers: req.headers
+    }))
+    DEBUG && console.log("response", JSON.stringify({
+        status: proxyRes.statusCode,
+        headers: proxyRes.headers
+    }))
 });
 
 http.createServer(app).listen(PORT, BIND_ADDRESS);
