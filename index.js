@@ -192,18 +192,19 @@ proxy.on('proxyRes', function (proxyRes, req, res) {
     if (req.url.match(/\.(css|js|img|font)/)) {
         res.setHeader('Cache-Control', 'public, max-age=86400');
     }
-
-    DEBUG && console.log("request", JSON.stringify({
-        body: req.body.toString('utf8'),
-        path: req.path,
-        method: req.method,
-        headers: req.headers
-    }))
-    DEBUG && console.log("response", JSON.stringify({
-        status: proxyRes.statusCode,
-        headers: proxyRes.headers
-    }))
-});
+    DEBUG && console.log(JSON.stringify({
+        request: {
+            body: req.body.toString('utf8'),
+            path: req.path,
+            method: req.method,
+            headers: req.headers
+        },
+        response: {
+            status: proxyRes.statusCode,
+            headers: proxyRes.headers
+        }
+    })
+);
 
 http.createServer(app).listen(PORT, BIND_ADDRESS);
 
