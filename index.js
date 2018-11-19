@@ -73,6 +73,8 @@ var argv = yargs.argv;
 
 var ENDPOINT = process.env.ENDPOINT || argv._[0];
 
+var DEBUG = process.env.DEBUG || false
+
 if (!ENDPOINT) {
     yargs.showHelp();
     process.exit(1);
@@ -186,10 +188,22 @@ proxy.on('proxyReq', function (proxyReq, req) {
     if (request.headers['x-amz-security-token']) proxyReq.setHeader('x-amz-security-token', request.headers['x-amz-security-token']);
 });
 
-proxy.on('proxyRes', function (proxyReq, req, res) {
+proxy.on('proxyRes', function (proxyRes, req, res) {
     if (req.url.match(/\.(css|js|img|font)/)) {
         res.setHeader('Cache-Control', 'public, max-age=86400');
     }
+    DEBUG && console.log(JSON.stringify({
+        request: {
+            body: req.body.toString('utf8'),
+            path: req.path,
+            method: req.method,
+            headers: req.headers
+        },
+        response: {
+            status: proxyRes.statusCode,
+            headers: proxyRes.headers
+        }
+    }))
 });
 
 http.createServer(app).listen(PORT, BIND_ADDRESS);
@@ -208,7 +222,9 @@ if (argv.H) {
     console.log('Health endpoint enabled at http://' + BIND_ADDRESS + ':' + PORT + argv.H);
 }
 
-fs.watch(`${homedir}/.aws/credentials`, (eventType, filename) => {
-    credentials = new AWS.SharedIniFileCredentials({profile: PROFILE});
-    AWS.config.credentials = credentials;
-});
+if (PROFILE) {
+    fs.watch(`${homedir}/.aws/credentials`, (eventType, filename) => {
+        credentials = new AWS.SharedIniFileCredentials({profile: PROFILE});
+        AWS.config.credentials = credentials;
+    });
+}
